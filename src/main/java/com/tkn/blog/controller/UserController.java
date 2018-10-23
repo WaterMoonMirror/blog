@@ -1,6 +1,8 @@
 package com.tkn.blog.controller;
 
+import com.tkn.blog.domain.Authority;
 import com.tkn.blog.domain.User;
+import com.tkn.blog.service.AuthorityService;
 import com.tkn.blog.service.UserService;
 import com.tkn.blog.util.ConstraintViolationExceptionHandler;
 import com.tkn.blog.vo.Response;
@@ -10,21 +12,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
 public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private AuthorityService authorityService;
+
     /**
      * 查询所用用户
      * @return
@@ -63,7 +73,27 @@ public class UserController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<Response> create(User user) {
+    public ResponseEntity<Response> create(User user, Long authorityId) {
+
+        List<Authority> authorities = new ArrayList<>();
+        authorities.add(authorityService.getAuthorityById(authorityId));
+        user.setAuthorities(authorities);
+
+        if(user.getId() == null) {
+            user.setEncodePassword(user.getPassword()); // 加密密码
+        }else {
+            // 判断密码是否做了变更
+            User originalUser = userService.getUserById(user.getId());
+            String rawPassword = originalUser.getPassword();
+            PasswordEncoder encoder = new BCryptPasswordEncoder();
+            String encodePasswd = encoder.encode(user.getPassword());
+            boolean isMatch = encoder.matches(rawPassword, encodePasswd);
+            if (!isMatch) {
+                user.setEncodePassword(user.getPassword());
+            }else {
+                user.setPassword(user.getPassword());
+            }
+        }
 
         try {
             userService.saveUser(user);

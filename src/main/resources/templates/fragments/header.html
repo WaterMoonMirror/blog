@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
     <!-- CSRF -->
-	<!--<meta name="_csrf" th:content="${_csrf.token}"/>-->
+	<meta name="_csrf" th:content="${_csrf.token}"/>
 	<!-- default header name is X-CSRF-TOKEN -->
-	<!--<meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 	
     <!-- Tether core CSS -->
     <link href="../../css/tether.min.css" th:href="@{/css/tether.min.css}" rel="stylesheet">
@@ -70,7 +70,8 @@
                 </form>
 
             </ul>
-            <!--<div sec:authorize="isAuthenticated()"  class="row" >
+            <!-- 认证后执行（登录后）-->
+            <div sec:authorize="isAuthenticated()"  class="row" >
 				<div class="dropdown">
 					<a class=" dropdown-toggle" href="/u/waylau" th:href="@{'/u/' + ${#authentication.name}}" data-toggle="dropdown"><span sec:authentication="name"></span></a>
 					<div class="dropdown-menu" >
@@ -78,10 +79,11 @@
 						<a class="dropdown-item" href="/u/waylau/profile" th:href="@{'/u/' + ${#authentication.name}} + '/profile'" >个人设置</a>
 					</div>
 				</div>
+                <!--未认证执行（游客）-->
 				<form action="/logout" th:action="@{/logout}" method="post">
 					<input class="btn btn-outline-success " type="submit" value="退出">
 				</form>
-            </div>-->
+            </div>
  
                 
 
