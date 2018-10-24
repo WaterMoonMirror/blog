@@ -3,16 +3,21 @@ package com.tkn.blog.service.impl;
 import com.tkn.blog.domain.User;
 import com.tkn.blog.repository.UserRepository;
 import com.tkn.blog.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService {
+@Slf4j
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -99,5 +104,11 @@ public class UserServiceImpl implements UserService {
         // 模糊查询
         name = "%" + name + "%";
         return userRepository.findByNameLike(name,pageable);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        log.info("username:"+s);
+        return userRepository.findByUsername(s);
     }
 }
