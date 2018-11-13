@@ -41,10 +41,10 @@ public class MainController {
      * 获取登录界面
      * @return
      */
-//    @GetMapping("/login")
-//    public String login() {
-//        return "login";
-//    }
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 
     @GetMapping("/login-error")
     public String loginError(Model model) {

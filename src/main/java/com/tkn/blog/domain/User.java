@@ -1,6 +1,8 @@
 package com.tkn.blog.domain;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +18,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class User implements UserDetails,  Serializable {
     private static final long serialVersionUID = 1L;
@@ -72,6 +75,16 @@ public class User implements UserDetails,  Serializable {
             simpleAuthorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
         }
         return simpleAuthorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
 
     /**
